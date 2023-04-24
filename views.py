@@ -1,6 +1,6 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, redirect, url_for, flash
 from models import Product
-from forms import ProductForm
+from forms import ProductForm, SellProductForm
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = '123456789'
@@ -31,9 +31,24 @@ def products_list():
             list_of_products[product_name] = [existing_product.quantity, existing_product.unit, existing_product.unit_price]
         else:
             list_of_products[product.name] = [product.quantity, product.unit, product.unit_price]
-        return render_template('list_of_products.html', list_of_products=list_of_products, form=form)
+        return render_template('list_of_products.html', list_of_products = list_of_products, form = form)
     else:
-        return render_template('list_of_products.html', list_of_products=list_of_products, form=form)
+        return render_template('list_of_products.html', list_of_products = list_of_products, form = form)
+
+@app.route('/sell/<product_name>', methods = ["GET", "POST"])
+def sell_product(product_name):
+    form = SellProductForm()
+    if form.validate_on_submit():
+        sell_quantity = form.sell_quantity.data
+        if product_name in list_of_products.keys():
+            if list_of_products[product_name][0] >= sell_quantity:
+                list_of_products[product_name][0] -= sell_quantity
+                return redirect(url_for('list_of_products'))
+            else:
+                flash('Not enough quantity to sell.')
+        else:
+            flash('Product not found')
+    return render_template('sell.html', form = form, product_name = product_name)
 
 if __name__ == '__main__':
     app.run(debug = True)
