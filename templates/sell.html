@@ -1,0 +1,12 @@
+{% extends "homepage.html" %}
+
+{% block content %}
+
+<form method="POST" action="{{ url_for('sell_product', product_name=product_name) }}">
+    {{ form.sell_quantity.label }}
+    {{ form.sell_quantity }}
+    {{ form.product_name(value=product_name) }}
+    {{ form.csrf_token }}
+    <input type="submit" value="Sell">
+</form>
+{% endblock %}
