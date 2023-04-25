@@ -1,0 +1,11 @@
+{% extends "homepage.html" %}
+
+{% block content %}
+	
+	{% for key, value in list_of_sold_products.items() %}
+		<h1>The income for {{ key }} is {{ value[0] * value[2] }}</h1>
+	{% endfor %}
+ 
+<h1>Whole income = {{ income }}</h1>
+
+{% endblock %}
