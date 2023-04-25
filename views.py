@@ -10,7 +10,11 @@ product2 = Product('Coffee', 300, 'kg', 5)
 product3 = Product('Potato', 1000, 'kg', 1.5)
 product4 = Product('Sugar', 500, 'kg', 6)
 list_of_products = {}
-
+list_of_sold_products = {}
+list_of_products['Milk'] = [100, 'l', 2.3]
+list_of_products['Coffee'] = [300, 'kg', 5]
+list_of_products['Potato'] = [1000, 'kg', 1.5]
+list_of_products['Sugar'] = [500, 'kg', 6]
 @app.route('/')
 def homepage():
     return render_template('homepage.html')
@@ -38,17 +42,35 @@ def products_list():
 @app.route('/sell/<product_name>', methods = ["GET", "POST"])
 def sell_product(product_name):
     form = SellProductForm()
-    if form.validate_on_submit():
+    if request.method == "POST":
         sell_quantity = form.sell_quantity.data
         if product_name in list_of_products.keys():
             if list_of_products[product_name][0] >= sell_quantity:
-                list_of_products[product_name][0] -= sell_quantity
-                return redirect(url_for('list_of_products'))
+                selled_product = Product(product_name, list_of_products[product_name][0], list_of_products[product_name][1], list_of_products[product_name][2])
+                selled_product.quantity -= sell_quantity
+                list_of_products[product_name] = [selled_product.quantity, selled_product.unit, selled_product.unit_price]
+                return render_template('list_of_products.html', list_of_products = list_of_products, selled_product = selled_product, form = form)
             else:
                 flash('Not enough quantity to sell.')
         else:
             flash('Product not found')
     return render_template('sell.html', form = form, product_name = product_name)
+
+@app.route('/cost')
+def get_cost():
+    cost = 0
+    for key, value in list_of_products.items():
+        i = value[0] * value[2]
+        cost += i
+    return render_template('cost.html', cost = cost, list_of_products = list_of_products)
+
+@app.route('/income')
+def get_income():
+    income = 0
+    for key, value in list_of_sold_products.items():
+        i = value[0] * value[2]
+        income +=i
+    return render_template('income.html', income = income, list_of_sold_products = list_of_sold_products)
 
 if __name__ == '__main__':
     app.run(debug = True)
