@@ -2,7 +2,7 @@
 
 {% block content %}
 	
-	{% for key, value in list_of_sold_products.items() %}
+	{% for key, value in sold_products.items() %}
 		<h1>The income for {{ key }} is {{ value[0] * value[2] }}</h1>
 	{% endfor %}
  
