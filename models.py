@@ -4,4 +4,3 @@ class Product():
         self.quantity = quantity
         self.unit = unit
         self.unit_price = unit_price
-
